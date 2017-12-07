@@ -2,77 +2,56 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "webAppName": {
+        "siteName": {
             "type": "string",
             "metadata": {
-                "description": "The name of the function app that you wish to create."
+                "description": "The name of the function app that you wish to create, this will be used as the subdomain of your service endpoint (i.e. myapp.azurewebsites.net)."
             }
-        },
-        "svcPlanSize": {
-            "type": "string",
-            "defaultValue": "F1",
-            "metadata": {
-                "description": "The instance size of the App Service Plan."
-            }
-        },
-        "svcPlanSku": {
-            "type": "string",
-            "allowedValues": [
-                "Free",
-                "Shared",
-                "Basic",
-                "Standard",
-                "Premium"
-            ],
-            "defaultValue": "Free",
-            "metadata": {
-                "description": "The pricing tier of the App Service plan."
-            }
-        }        
+        }
     },
 
     "variables": {
-        "webAppNameLower": "[toLower(parameters('webAppName'))]",
-        "documentDbName": "[concat(variables('webAppNameLower'), 'documentdb')]",
-        "storageAccountName": "[concat(variables('webAppNameLower'), 'storage')]",
-        "functionAppUrl": "[concat(parameters('webAppName'),'.azurewebsites.net')]"
+        "siteNameLower": "[toLower(parameters('siteName'))]",
+        "documentDbName": "[concat(variables('siteNameLower'), 'documentdb')]",
+        "storageAccountName": "[concat(variables('siteNameLower'), 'storage')]",
+        "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]"
     },
         
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
             "kind": "functionapp",
-            "name": "[parameters('webAppName')]",
+            "name": "[parameters('siteName')]",
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[parameters('webAppName')]"
+                "name": "[parameters('siteName')]"
             },
             "tags": {
                 "displayName": "App Service Plan"
             },
             "sku": {
-                "name": "[parameters('svcPlanSize')]",
-                "tier": "[parameters('svcPlanSku')]",
+                "name": "F1",
+                "tier": "FREE",
                 "capacity": 1
             }
         },
         {
             "type": "Microsoft.Web/Sites",
             "kind": "functionapp",
-            "name": "[parameters('webAppName')]",
+            "name": "[parameters('siteName')]",
             "apiVersion": "2016-03-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[parameters('webAppName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('webAppName'))]",
+                "name": "[parameters('siteName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
                 "clientAffinityEnabled": false
             },
             "tags": {
               "displayName": "Function App"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('webAppName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
             "resources": [
@@ -81,7 +60,7 @@
                     "name": "connectionstrings",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('webAppName'))]",
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
                     "properties": {
@@ -96,7 +75,7 @@
                     "name": "appsettings",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('webAppName'))]",
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
                         "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
@@ -105,7 +84,7 @@
                         "FUNCTIONS_EXTENSION_VERSION": "~1",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": true,
                         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
-                        "WEBSITE_CONTENTSHARE": "[variables('webAppNameLower')]",
+                        "WEBSITE_CONTENTSHARE": "[variables('siteNameLower')]",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
@@ -121,17 +100,17 @@
         {
             "type": "microsoft.insights/components",
             "kind": "web",
-            "name": "[parameters('webAppName')]",
+            "name": "[parameters('siteName')]",
             "apiVersion": "2014-04-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "ApplicationId": "[parameters('webAppName')]"
+                "ApplicationId": "[parameters('siteName')]"
             },
             "tags": {
                 "displayName": "Application Insights"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/Sites', parameters('webAppName'))]"
+                "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
             ]
         },
         {
@@ -175,7 +154,7 @@
     "outputs": {
         "FunctionsUrl": {
             "type": "string",
-            "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('webAppName'))).hostNames[0])]"
+            "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('siteName'))).hostNames[0])]"
         },
         "DocumentDbUrl": {
             "type": "string",
