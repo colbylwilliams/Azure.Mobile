@@ -5,7 +5,7 @@
         "siteName": {
             "type": "string",
             "metadata": {
-                "description": "The name of the function app that you wish to create, this will be used as the subdomain of your service endpoint (i.e. myapp.azurewebsites.net)."
+                "description": "The name of the function app that you wish to create, this will also be used as the subdomain of your service endpoint (i.e. myapp.azurewebsites.net)."
             }
         }
     },
@@ -107,6 +107,7 @@
                 "ApplicationId": "[parameters('siteName')]"
             },
             "tags": {
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', paramaters('siteName')))]": "Resource",
                 "displayName": "Application Insights"
             },
             "dependsOn": [
