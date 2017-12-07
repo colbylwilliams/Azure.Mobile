@@ -107,7 +107,7 @@
                 "ApplicationId": "[parameters('siteName')]"
             },
             "tags": {
-                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', paramaters('siteName')))]": "Resource",
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('siteName')))]": "Resource",
                 "displayName": "Application Insights"
             },
             "dependsOn": [
