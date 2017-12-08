@@ -9,14 +9,12 @@
             }
         }
     },
-
     "variables": {
         "siteNameLower": "[toLower(parameters('siteName'))]",
         "documentDbName": "[concat(variables('siteNameLower'), 'documentdb')]",
         "storageAccountName": "[concat(variables('siteNameLower'), 'storage')]",
         "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]"
     },
-        
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
@@ -37,7 +35,7 @@
             }
         },
         {
-            "type": "Microsoft.Web/Sites",
+            "type": "Microsoft.Web/sites",
             "kind": "functionapp",
             "name": "[parameters('siteName')]",
             "apiVersion": "2016-03-01",
@@ -48,7 +46,8 @@
                 "clientAffinityEnabled": false
             },
             "tags": {
-              "displayName": "Function App"
+                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('siteName')))]": "empty",
+                "displayName": "Function App"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
@@ -92,13 +91,14 @@
                         "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
                         "AzureWebJobsSecretStorageType": "Blob",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
-                        "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]"
+                        "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
+                        "applicationInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('siteName')), '2014-04-01').InstrumentationKey]"
                     }
                 }
             ]
         },
         {
-            "type": "microsoft.insights/components",
+            "type": "Microsoft.Insights/components",
             "kind": "web",
             "name": "[parameters('siteName')]",
             "apiVersion": "2014-04-01",
@@ -115,7 +115,7 @@
             ]
         },
         {
-            "type": "Microsoft.DocumentDb/databaseAccounts",
+            "type": "Microsoft.DocumentDB/databaseAccounts",
             "name": "[variables('documentDbName')]",
             "apiVersion": "2015-04-08",
             "location": "[resourceGroup().location]",
