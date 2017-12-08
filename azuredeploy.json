@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "siteName": {
+        "webSiteName": {
             "type": "string",
             "metadata": {
                 "description": "The name of the function app that you wish to create, this will also be used as the subdomain of your service endpoint (i.e. myapp.azurewebsites.net)."
@@ -10,47 +10,50 @@
         }
     },
     "variables": {
-        "siteNameLower": "[toLower(parameters('siteName'))]",
-        "documentDbName": "[concat(variables('siteNameLower'), 'documentdb')]",
-        "storageAccountName": "[concat(variables('siteNameLower'), 'storage')]",
-        "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]"
+        "documentDbName": "[concat('database', uniqueString(resourceGroup().id))]",
+        "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
+        "functionAppUrl": "[concat(parameters('webSiteName'),'.azurewebsites.net')]"
     },
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
             "kind": "functionapp",
-            "name": "[parameters('siteName')]",
+            "name": "[parameters('webSiteName')]",
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[parameters('siteName')]"
+                "name": "[parameters('webSiteName')]"
             },
             "tags": {
                 "displayName": "App Service Plan"
             },
             "sku": {
-                "name": "F1",
-                "tier": "FREE",
+                "name": "B1",
+                "tier": "Basic",
                 "capacity": 1
             }
         },
         {
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
-            "name": "[parameters('siteName')]",
+            "name": "[parameters('webSiteName')]",
             "apiVersion": "2016-03-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[parameters('siteName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
-                "clientAffinityEnabled": false
+                "name": "[parameters('webSiteName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('webSiteName'))]",
+                "clientAffinityEnabled": false,
+                "siteConfig": {
+                    "phpVersion": "off",
+                    "alwaysOn": true
+                }
             },
             "tags": {
-                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('siteName')))]": "empty",
+                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('webSiteName')))]": "empty",
                 "displayName": "Function App"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', parameters('webSiteName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
             "resources": [
@@ -59,7 +62,7 @@
                     "name": "connectionstrings",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.Web/Sites', parameters('webSiteName'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
                     "properties": {
@@ -74,7 +77,7 @@
                     "name": "appsettings",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.Web/Sites', parameters('webSiteName'))]",
                         "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
@@ -83,7 +86,7 @@
                         "FUNCTIONS_EXTENSION_VERSION": "~1",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": true,
                         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
-                        "WEBSITE_CONTENTSHARE": "[variables('siteNameLower')]",
+                        "WEBSITE_CONTENTSHARE": "[variables('webSiteName')]",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
@@ -92,7 +95,7 @@
                         "AzureWebJobsSecretStorageType": "Blob",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
-                        "applicationInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('siteName')), '2014-04-01').InstrumentationKey]"
+                        "applicationInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('webSiteName')), '2014-04-01').InstrumentationKey]"
                     }
                 }
             ]
@@ -100,18 +103,18 @@
         {
             "type": "Microsoft.Insights/components",
             "kind": "web",
-            "name": "[parameters('siteName')]",
+            "name": "[parameters('webSiteName')]",
             "apiVersion": "2014-04-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "ApplicationId": "[parameters('siteName')]"
+                "ApplicationId": "[parameters('webSiteName')]"
             },
             "tags": {
-                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('siteName')))]": "Resource",
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('webSiteName')))]": "Resource",
                 "displayName": "Application Insights"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+                "[resourceId('Microsoft.Web/Sites', parameters('webSiteName'))]"
             ]
         },
         {
@@ -121,7 +124,7 @@
             "location": "[resourceGroup().location]",
             "tags": {
                 "defaultExperience": "DocumentDB",
-                "displayName": "Application Insights"
+                "displayName": "Document Database"
             },
             "properties": {
                 "name": "[variables('documentDbName')]",
@@ -155,7 +158,7 @@
     "outputs": {
         "FunctionsUrl": {
             "type": "string",
-            "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('siteName'))).hostNames[0])]"
+            "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('webSiteName'))).hostNames[0])]"
         },
         "DocumentDbUrl": {
             "type": "string",
