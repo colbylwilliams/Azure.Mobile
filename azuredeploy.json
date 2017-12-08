@@ -10,19 +10,20 @@
         }
     },
     "variables": {
+        "webSiteNameLower": "[toLower(parameters('webSiteName'))]",
         "documentDbName": "[concat('database', uniqueString(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
-        "functionAppUrl": "[concat(parameters('webSiteName'),'.azurewebsites.net')]"
+        "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]"
     },
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
             "kind": "functionapp",
-            "name": "[parameters('webSiteName')]",
+            "name": "[variables('webSiteNameLower')]",
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[parameters('webSiteName')]"
+                "name": "[variables('webSiteNameLower')]"
             },
             "tags": {
                 "displayName": "App Service Plan"
@@ -36,12 +37,12 @@
         {
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
-            "name": "[parameters('webSiteName')]",
+            "name": "[variables('webSiteNameLower')]",
             "apiVersion": "2016-03-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[parameters('webSiteName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('webSiteName'))]",
+                "name": "[variables('webSiteNameLower')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "clientAffinityEnabled": false,
                 "siteConfig": {
                     "phpVersion": "off",
@@ -49,11 +50,11 @@
                 }
             },
             "tags": {
-                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('webSiteName')))]": "empty",
+                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower')))]": "empty",
                 "displayName": "Function App"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('webSiteName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
             "resources": [
@@ -62,7 +63,7 @@
                     "name": "connectionstrings",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('webSiteName'))]",
+                        "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
                     "properties": {
@@ -77,7 +78,7 @@
                     "name": "appsettings",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('webSiteName'))]",
+                        "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
                         "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
@@ -86,7 +87,7 @@
                         "FUNCTIONS_EXTENSION_VERSION": "~1",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": true,
                         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
-                        "WEBSITE_CONTENTSHARE": "[variables('webSiteName')]",
+                        "WEBSITE_CONTENTSHARE": "[variables('webSiteNameLower')]",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
@@ -95,7 +96,7 @@
                         "AzureWebJobsSecretStorageType": "Blob",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
-                        "applicationInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('webSiteName')), '2014-04-01').InstrumentationKey]"
+                        "applicationInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', variables('webSiteNameLower')), '2014-04-01').InstrumentationKey]"
                     }
                 }
             ]
@@ -103,18 +104,18 @@
         {
             "type": "Microsoft.Insights/components",
             "kind": "web",
-            "name": "[parameters('webSiteName')]",
+            "name": "[variables('webSiteNameLower')]",
             "apiVersion": "2014-04-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "ApplicationId": "[parameters('webSiteName')]"
+                "ApplicationId": "[variables('webSiteNameLower')]"
             },
             "tags": {
-                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('webSiteName')))]": "Resource",
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('webSiteNameLower')))]": "Resource",
                 "displayName": "Application Insights"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/Sites', parameters('webSiteName'))]"
+                "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]"
             ]
         },
         {
@@ -158,7 +159,7 @@
     "outputs": {
         "FunctionsUrl": {
             "type": "string",
-            "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('webSiteName'))).hostNames[0])]"
+            "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))).hostNames[0])]"
         },
         "DocumentDbUrl": {
             "type": "string",
