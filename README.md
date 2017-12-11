@@ -1,8 +1,8 @@
-# Azure.Mobile
+# Azure.Mobile [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
 
 **`Azure.Mobile` is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
 
-**The two objectives of the framework are:**
+The objective of the framework is to:
 
 1. Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks
 2. Provide native iOS and android SDKs with delightful APIs to interact with the services
