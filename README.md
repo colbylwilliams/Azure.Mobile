@@ -1,8 +1,6 @@
 # Azure.Mobile
 
-## What is this?
-
-**`Azure.Mobile`** is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.
+`Azure.Mobile` is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.
 
 ### The goal:
 
