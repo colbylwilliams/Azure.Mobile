@@ -1,11 +1,13 @@
 # Azure.Mobile [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
 
-**`Azure.Mobile` is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
+**Azure.Mobile is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
 
 The objective of the framework is to:
 
 1. Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks
 2. Provide native iOS and android SDKs with delightful APIs to interact with the services
+
+
 
 ## What's included?
 
@@ -19,18 +21,19 @@ It includes one-click deployment templates and native client SDKs for the follow
 - Client/Server Analytics
 
 
+
 ## How do I use it?
 
-We are working on several different configruration options, each with a one-click-deploy template.
+We're working on several different configruration options, each with a one-click-deploy template.
 
-[![Deploy to Azure][azure-deploy-button]][azure-deploy]   
-[![Visualize][azure-visualize-button]][azure-visualize]
+[![Deploy to Azure][azure-deploy-button]][azure-deploy]{:target="_blank"}
 
 
 
 ## How is this different than Azure Mobile Apps (formally Azure App Services)?
 
 _coming soon..._
+
 
 
 ## What is the price/cost?
