@@ -21,6 +21,8 @@ It includes one-click deployment templates and native client SDKs for the follow
 
 ## How do I use it?
 
+We are working on several different configruration options, each with a one-click-deploy template.
+
 [![Deploy to Azure][azure-deploy-button]][azure-deploy]   
 [![Visualize][azure-visualize-button]][azure-visualize]
 
@@ -28,7 +30,7 @@ It includes one-click deployment templates and native client SDKs for the follow
 
 ## How is this different than Azure Mobile Apps (formally Azure App Services)?
 
-coming soon...
+_coming soon..._
 
 
 ## What is the price/cost?
