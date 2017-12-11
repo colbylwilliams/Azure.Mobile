@@ -1,4 +1,4 @@
-# Azure.Mobile [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
+# Azure.Mobile
 
 **Azure.Mobile is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
 
@@ -26,7 +26,7 @@ It includes one-click deployment templates and native client SDKs for the follow
 
 We're working on several different configruration options, each with a one-click-deploy template.
 
-[![Deploy to Azure][azure-deploy-button]][azure-deploy]{:target="_blank"}
+[![Deploy to Azure][azure-deploy-button]][azure-deploy]
 
 
 
