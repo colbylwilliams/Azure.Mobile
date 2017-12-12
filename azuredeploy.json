@@ -1,11 +1,21 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.6",
+    "contentVersion": "1.0.1.7",
     "parameters": {
         "webSiteName": {
             "type": "string",
             "metadata": {
                 "description": "The name of the function app that you wish to create, this will also be used as the subdomain of your service endpoint (i.e. myapp.azurewebsites.net)."
+            }
+        },
+        "functionLanguage": {
+            "type": "string",
+            "allowedValues": [
+                "Javascript",
+                "C#"
+            ],
+            "metadata": {
+                "description": "The language to write your serverless functions in."
             }
         }
     },
@@ -60,6 +70,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]",
                 "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
             ],
             "resources": [
@@ -110,35 +121,6 @@
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]"
-                    }
-                },
-
-                {
-                    "apiVersion": "2015-08-01",
-                    "name": "WarmTimerTrigger",
-                    "type": "functions",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]"
-                    ],
-                    "properties": {
-                        "config": {
-                            "bindings": [
-                                {
-                                    "authLevel": "anonymous",
-                                    "name": "req",
-                                    "type": "httpTrigger",
-                                    "direction": "in"
-                                },
-                                {
-                                    "name": "res",
-                                    "type": "http",
-                                    "direction": "out"
-                                }
-                            ]
-                        },
-                        "files": {
-                            "run.csx": "using System.Net;\r\n\r\n public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)\r\n\r\n {\r\n\r\n     return req.CreateResponse(HttpStatusCode.OK, \"Hello from MyFunction\");\r\n\r\n }"
-                        }
                     }
                 }
             ]
