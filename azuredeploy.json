@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.0",
+    "contentVersion": "1.0.1.1",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -182,7 +182,6 @@
                 "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('documentDbName'))]",
-                "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]",
                 "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
             ]
         },
