@@ -260,22 +260,7 @@
                     "scale": null,
                     "properties": {
                         "name": "[variables('notificationHubName')]",
-                        "authorizationRules": [],
-                        "gcmCredential": {
-                            "properties": {
-                                "googleApiKey": "[parameters('firebaseNotificationsServerKey')]",
-                                "gcmEndpoint": "https://android.googleapis.com/gcm/send"
-                            }
-                        },
-                        "apnsCredential": {
-                            "properties": {
-                                "keyId": "[parameters('appleAuthKeyId')]",
-                                "appName": "[parameters('iosAppBundleId')]",
-                                "appId": "[parameters('iosAppTeamId')]",
-                                "token": "[parameters('appleAuthKeyValue')]",
-                                "endpoint": "gateway.sandbox.push.apple.com"
-                            }
-                        }
+                        "authorizationRules": []
                     },
                     "dependsOn": [
                         "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationNamespaceName'))]"
