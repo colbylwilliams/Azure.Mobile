@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.3",
+    "contentVersion": "1.0.1.5",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -54,96 +54,64 @@
                     "alwaysOn": true,
                     "push": {
                         "isPushEnabled": true
-                    },
-                    "appSettings": [
-                        {
-                            "name": "FUNCTION_APP_EDIT_MODE",
-                            "value": "readonly"
-                        },
-                        {
-                            "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~1"
-                        },
-                        {
-                            "name": "WEBSITE_AUTH_HIDE_DEPRECATED_SID",
-                            "value": "true"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTSHARE",
-                            "value": "[variables('webSiteNameLower')]"
-                        },
-                        {
-                            "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
-                            "value": "2"
-                        },
-                        {
-                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "6.5.0"
-                        },
-                        {
-                            "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]"
-                        },
-                        {
-                            "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]"
-                        },
-                        {
-                            "name": "AzureWebJobsDocumentDBConnectionString",
-                            "value": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]"
-                        },
-                        {
-                            "name": "AzureWebJobsNotificationHubName",
-                            "value": "[variables('notificationHubName')]"
-                        },
-                        {
-                            "name": "AzureWebJobsNotificationHubsConnectionString",
-                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationHubNamespace'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]"
-                        },
-                        {
-                            "name": "AzureWebJobsSecretStorageType",
-                            "value": "Blob"
-                        },
-                        {
-                            "name": "RemoteDocumentDbKey",
-                            "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]"
-                        },
-                        {
-                            "name": "RemoteDocumentDbUrl",
-                            "value": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]"
-                        },
-                        {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]"
-                        }
-                    ],
-                    "connectionStrings": [
-                        {
-                            "name": "MS_NotificationHubConnectionString",
-                            "connectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationHubNamespace'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",
-                            "type": "NotificationHub"
-                        },
-                        {
-                            "name": "MS_AzureStorageAccountConnectionString",
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
-                            "type": "Custom"
-                        }
-                    ]
-
+                    }
                 }
-            },
-            "tags": {
-                "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower')))]": "empty",
-                "displayName": "Function App"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
+            ],
+            "resources": [
+                {
+                    "type": "config",
+                    "name": "connectionstrings",
+                    "apiVersion": "2016-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
+                    ],
+                    "properties": {
+                        "MS_NotificationHubConnectionString": {
+                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationHubNamespace'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",
+                            "type": "NotificationHub"
+                        },
+                        "MS_AzureStorageAccountConnectionString": {
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
+                            "type": "Custom"
+                        }
+                    }
+                },
+
+                {
+                    "type": "config",
+                    "name": "appsettings",
+                    "apiVersion": "2016-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
+                        "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                    ],
+                    "properties": {
+                        "FUNCTION_APP_EDIT_MODE": "readonly",
+                        "FUNCTIONS_EXTENSION_VERSION": "~1",
+                        "WEBSITE_AUTH_HIDE_DEPRECATED_SID": "true",
+                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
+                        "WEBSITE_CONTENTSHARE": "[variables('webSiteNameLower')]",
+                        "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
+                        "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
+                        "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
+                        "AzureWebJobsNotificationHubName": "[variables('notificationHubName')]",
+                        "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationHubNamespace'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",
+                        "AzureWebJobsSecretStorageType": "Blob",
+                        "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
+                        "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]"
+                    }
+                }
             ]
         },
 
