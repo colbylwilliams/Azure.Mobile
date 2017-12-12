@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.3",
+    "contentVersion": "1.0.0.4",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -113,7 +113,7 @@
                     ],
                     "properties": {
                         "MS_NotificationHubConnectionString": {
-                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), 2017-04-01).primaryConnectionString]",
+                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",
                             "type": "Custom"
                         },                        
                         "MS_AzureStorageAccountConnectionString": {
@@ -170,7 +170,7 @@
                         "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
                         "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
                         "AzureWebJobsNotificationHubName": "[variables('notificationHubName')]",
-                        "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), 2017-04-01).primaryConnectionString]",                                                
+                        "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",                                                
                         "AzureWebJobsSecretStorageType": "Blob",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
