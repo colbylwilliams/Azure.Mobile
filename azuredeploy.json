@@ -15,32 +15,32 @@
                 "description": "API key is used to authenticate with Google Cloud Messaging."
             }
         },
-        "iOSAppTeamId": {
+        "iosAppTeamId": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "The issuer (iss) registered claim key, whose value is your 10-character Team ID, obtained from your developer account"
             }
         },
-        "iOSAppBundleId": {
+        "iosAppBundleId": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "The bundle id of the application"
+                "description": "The bundle id of the application (example: com.azure.iosapp)"
             }
         },        
-        "appleDeveloperKeyId": {
+        "appleAuthKeyId": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "A 10-character key identifier (kid) key, obtained from your developer account"
+                "description": "A 10-character key identifier (kid) key, obtained from your developer account at https://developer.apple.com/account/ios/authkey/"
             }
         },
-        "appleDeveloperKeyValue": {
+        "appleAuthKeyValue": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "Provider Authentication Token, obtained through your developer account"
+                "description": "Provider Authentication Token, obtained through your developer account https://developer.apple.com/account/ios/authkey/"
             }
         }
     },
@@ -52,8 +52,8 @@
         "notificationNamespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
         "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]",
-        "iOSNotificationAppValues": "[and(not(empty(parameters('iOSAppTeamId'))), not(empty(parameters('iOSAppBundleId'))))]",
-        "iOSNotificationKeyValues": "[and(not(empty(parameters('appleDeveloperKeyId'))), not(empty(parameters('appleDeveloperKeyValue'))))]",
+        "iOSNotificationAppValues": "[and(not(empty(parameters('iosAppTeamId'))), not(empty(parameters('iosAppBundleId'))))]",
+        "iOSNotificationKeyValues": "[and(not(empty(parameters('appleAuthKeyId'))), not(empty(parameters('appleAuthKeyValue'))))]",
         "firebaseNotificationValues": "[not(empty(parameters('firebaseNotificationsServerKey')))]"
     },
 
@@ -286,10 +286,10 @@
                         },
                         "apnsCredential": {
                             "properties": {
-                                "keyId": "[parameters('appleDeveloperKeyId')]",
-                                "appName": "[parameters('iOSAppBundleId')]",
-                                "appId": "[parameters('iOSAppTeamId')]",
-                                "token": "[parameters('appleDeveloperKeyValue')]",
+                                "keyId": "[parameters('appleAuthKeyId')]",
+                                "appName": "[parameters('iosAppBundleId')]",
+                                "appId": "[parameters('iosAppTeamId')]",
+                                "token": "[parameters('appleAuthKeyValue')]",
                                 "endpoint": "gateway.sandbox.push.apple.com"
                             }
                         }
