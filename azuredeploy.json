@@ -1,20 +1,62 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.1",
+    "contentVersion": "1.0.0.2",
     "parameters": {
         "webSiteName": {
             "type": "string",
             "metadata": {
                 "description": "The name of the function app that you wish to create, this will also be used as the subdomain of your service endpoint (i.e. myapp.azurewebsites.net)."
             }
+        },
+        "firebaseNotificationsServerKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "API key is used to authenticate with Google Cloud Messaging."
+            }
+        },
+        "iOSAppTeamId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The issuer (iss) registered claim key, whose value is your 10-character Team ID, obtained from your developer account"
+            }
+        },
+        "iOSAppBundleId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The bundle id of the application"
+            }
+        },        
+        "appleDeveloperKeyId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "A 10-character key identifier (kid) key, obtained from your developer account"
+            }
+        },
+        "appleDeveloperKeyValue": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provider Authentication Token, obtained through your developer account"
+            }
         }
     },
+
     "variables": {
         "webSiteNameLower": "[toLower(parameters('webSiteName'))]",
         "documentDbName": "[concat('database', uniqueString(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
-        "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]"
+        "notificationNamespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
+        "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
+        "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]",
+        "iOSNotificationAppValues": "[and(not(empty(parameters('iOSAppTeamId'))), not(empty(parameters('iOSAppBundleId'))))]",
+        "iOSNotificationKeyValues": "[and(not(empty(parameters('appleDeveloperKeyId'))), not(empty(parameters('appleDeveloperKeyValue'))))]",
+        "firebaseNotificationValues": "[not(empty(parameters('firebaseNotificationsServerKey')))]"
     },
+
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
@@ -34,6 +76,7 @@
                 "capacity": 1
             }
         },
+
         {
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
@@ -55,7 +98,8 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
             ],
             "resources": [
                 {
@@ -64,15 +108,47 @@
                     "apiVersion": "2016-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
-                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
                     ],
                     "properties": {
+                        "MS_NotificationHubConnectionString": {
+                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), 2017-04-01).primaryConnectionString]",
+                            "type": "Custom"
+                        },                        
                         "MS_AzureStorageAccountConnectionString": {
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
                             "type": "Custom"
                         }
                     }
                 },
+
+                {
+                    "type": "providers/links",
+                    "name": "Microsoft.Resources/SiteToHub",
+                    "apiVersion": "2016-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                    ],
+                    "properties": {
+                        "targetId": "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                    }
+                },
+
+                {
+                    "type": "config",
+                    "name": "pushsettings",
+                    "apiVersion": "2016-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                    ],
+                    "properties": {
+                        "isPushEnabled": true
+                    }
+                },
+
                 {
                     "type": "config",
                     "name": "appsettings",
@@ -86,21 +162,41 @@
                         "FUNCTION_APP_EDIT_MODE": "readonly",
                         "FUNCTIONS_EXTENSION_VERSION": "~1",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": "true",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
+                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
                         "WEBSITE_CONTENTSHARE": "[variables('webSiteNameLower')]",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
-                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
-                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
                         "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
+                        "AzureWebJobsNotificationHubName": "[variables('notificationHubName')]",
+                        "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), 2017-04-01).primaryConnectionString]",                                                
                         "AzureWebJobsSecretStorageType": "Blob",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]"
                     }
+                },
+
+                {
+                    "type": "sourcecontrols",
+                    "name": "web",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
+                        "[resourceId('Microsoft.Web/Sites/config', variables('webSiteNameLower'), 'pushsettings')]",
+                        "[resourceId('Microsoft.Web/Sites/config', variables('webSiteNameLower'), 'appsettings')]",
+                        "[resourceId('Microsoft.Web/Sites/config', variables('webSiteNameLower'), 'connectionstrings')]"
+                    ],
+                    "properties": {
+                        "repoUrl": "[parameters('repoURL')]",
+                        "branch": "[parameters('branch')]",
+                        "isManualIntegration": true
+                    }
                 }
             ]
         },
+
         {
             "type": "Microsoft.Insights/components",
             "kind": "web",
@@ -118,6 +214,7 @@
                 "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]"
             ]
         },
+
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "name": "[variables('documentDbName')]",
@@ -138,6 +235,7 @@
                 ]
             }
         },
+
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
@@ -154,7 +252,55 @@
             "properties": {
                 "name": "[variables('storageAccountName')]"
             }
+        },
+
+        {
+            "type": "Microsoft.NotificationHubs/namespaces",
+            "name": "[variables('notificationNamespaceName')]",
+            "apiVersion": "2017-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "scale": null,
+            "sku": {
+                "name": "Free"
+            },
+            "properties": {
+                "name": "[variables('notificationNamespaceName')]",
+                "namespaceType": "NotificationHub"
+            },
+            "resources": [
+                {
+                    "type": "notificationHubs",
+                    "name": "[variables('notificationHubName')]",
+                    "apiVersion": "2017-04-01",
+                    "location": "[resourceGroup().location]",
+                    "scale": null,
+                    "properties": {
+                        "name": "[variables('notificationHubName')]",
+                        "authorizationRules": [],
+                        "gcmCredential": {
+                            "properties": {
+                                "googleApiKey": "[parameters('firebaseNotificationsServerKey')]",
+                                "gcmEndpoint": "https://android.googleapis.com/gcm/send"
+                            }
+                        },
+                        "apnsCredential": {
+                            "properties": {
+                                "keyId": "[parameters('appleDeveloperKeyId')]",
+                                "appName": "[parameters('iOSAppBundleId')]",
+                                "appId": "[parameters('iOSAppTeamId')]",
+                                "token": "[parameters('appleDeveloperKeyValue')]",
+                                "endpoint": "gateway.sandbox.push.apple.com"
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationNamespaceName'))]"
+                    ]
+                }
+            ]
         }
+
     ],
     "outputs": {
         "FunctionsUrl": {
