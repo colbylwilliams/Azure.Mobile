@@ -1,46 +1,11 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.1",
+    "contentVersion": "1.0.1.2",
     "parameters": {
         "webSiteName": {
             "type": "string",
             "metadata": {
                 "description": "The name of the function app that you wish to create, this will also be used as the subdomain of your service endpoint (i.e. myapp.azurewebsites.net)."
-            }
-        },
-        "firebaseNotificationsServerKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "API key is used to authenticate with Google Cloud Messaging."
-            }
-        },
-        "iosAppTeamId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "The issuer (iss) registered claim key, whose value is your 10-character Team ID, obtained from your developer account"
-            }
-        },
-        "iosAppBundleId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "The bundle id of the application (example: com.azure.iosapp)"
-            }
-        },        
-        "appleAuthKeyId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "A 10-character key identifier (kid) key, obtained from your developer account at https://developer.apple.com/account/ios/authkey/"
-            }
-        },
-        "appleAuthKeyValue": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Provider Authentication Token, obtained through your developer account https://developer.apple.com/account/ios/authkey/"
             }
         }
     },
@@ -51,10 +16,7 @@
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
         "notificationHubNamespace": "[concat('namespace', uniqueString(resourceGroup().id))]",
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
-        "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]",
-        "iOSNotificationAppValues": "[and(not(empty(parameters('iosAppTeamId'))), not(empty(parameters('iosAppBundleId'))))]",
-        "iOSNotificationKeyValues": "[and(not(empty(parameters('appleAuthKeyId'))), not(empty(parameters('appleAuthKeyValue'))))]",
-        "firebaseNotificationValues": "[not(empty(parameters('firebaseNotificationsServerKey')))]"
+        "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]"
     },
 
     "resources": [
