@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.8",
+    "contentVersion": "1.0.0.9",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -49,7 +49,7 @@
         "webSiteNameLower": "[toLower(parameters('webSiteName'))]",
         "documentDbName": "[concat('database', uniqueString(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
-        "notificationNamespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
+        "notificationHubNamespace": "[concat('namespace', uniqueString(resourceGroup().id))]",
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
         "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]",
         "iOSNotificationAppValues": "[and(not(empty(parameters('iosAppTeamId'))), not(empty(parameters('iosAppBundleId'))))]",
@@ -99,7 +99,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
             ],
             "resources": [
                 {
@@ -109,11 +109,11 @@
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
                     ],
                     "properties": {
                         "MS_NotificationHubConnectionString": {
-                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",
+                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationHubNamespace'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",
                             "type": "Custom"
                         },                        
                         "MS_AzureStorageAccountConnectionString": {
@@ -129,10 +129,11 @@
                     "apiVersion": "2017-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
-                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                        "[resourceId('Microsoft.Web/Sites/config', variables('webSiteNameLower'), 'pushsettings')]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
                     ],
                     "properties": {
-                        "targetId": "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                        "targetId": "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
                     }
                 },
 
@@ -142,7 +143,7 @@
                     "apiVersion": "2016-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
-                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
                     ],
                     "properties": {
                         "isPushEnabled": true
@@ -170,7 +171,7 @@
                         "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
                         "AzureWebJobsNotificationHubName": "[variables('notificationHubName')]",
-                        "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",                                                
+                        "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationHubNamespace'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",                                                
                         "AzureWebJobsSecretStorageType": "Blob",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
@@ -239,7 +240,7 @@
 
         {
             "type": "Microsoft.NotificationHubs/namespaces",
-            "name": "[variables('notificationNamespaceName')]",
+            "name": "[variables('notificationHubNamespace')]",
             "apiVersion": "2017-04-01",
             "location": "[resourceGroup().location]",
             "tags": {},
@@ -248,7 +249,7 @@
                 "name": "Free"
             },
             "properties": {
-                "name": "[variables('notificationNamespaceName')]",
+                "name": "[variables('notificationHubNamespace')]",
                 "namespaceType": "NotificationHub"
             },
             "resources": [
@@ -263,7 +264,7 @@
                         "authorizationRules": []
                     },
                     "dependsOn": [
-                        "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationNamespaceName'))]"
+                        "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]"
                     ]
                 }
             ]
