@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.7",
+    "contentVersion": "1.0.0.8",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -117,7 +117,7 @@
                             "type": "Custom"
                         },                        
                         "MS_AzureStorageAccountConnectionString": {
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                             "type": "Custom"
                         }
                     }
@@ -126,7 +126,7 @@
                 {
                     "type": "providers/links",
                     "name": "Microsoft.Resources/SiteToHub",
-                    "apiVersion": "2016-08-01",
+                    "apiVersion": "2017-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
                         "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationNamespaceName'), variables('notificationHubName'))]"
@@ -162,12 +162,12 @@
                         "FUNCTION_APP_EDIT_MODE": "readonly",
                         "FUNCTIONS_EXTENSION_VERSION": "~1",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": "true",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
+                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "WEBSITE_CONTENTSHARE": "[variables('webSiteNameLower')]",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
-                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
-                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-06-01').key1)]",
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
                         "AzureWebJobsNotificationHubName": "[variables('notificationHubName')]",
                         "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('notificationNamespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString]",                                                
@@ -222,7 +222,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2017-10-01",
             "kind": "Storage",
             "location": "[resourceGroup().location]",
             "sku": {
