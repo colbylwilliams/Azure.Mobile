@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.4",
+    "contentVersion": "1.0.0.5",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -175,23 +175,6 @@
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]"
-                    }
-                },
-
-                {
-                    "type": "sourcecontrols",
-                    "name": "web",
-                    "apiVersion": "2015-08-01",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', variables('webSiteNameLower'))]",
-                        "[resourceId('Microsoft.Web/Sites/config', variables('webSiteNameLower'), 'pushsettings')]",
-                        "[resourceId('Microsoft.Web/Sites/config', variables('webSiteNameLower'), 'appsettings')]",
-                        "[resourceId('Microsoft.Web/Sites/config', variables('webSiteNameLower'), 'connectionstrings')]"
-                    ],
-                    "properties": {
-                        "repoUrl": "[parameters('repoURL')]",
-                        "branch": "[parameters('branch')]",
-                        "isManualIntegration": true
                     }
                 }
             ]
