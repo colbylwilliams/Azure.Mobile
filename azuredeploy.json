@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.5",
+    "contentVersion": "1.0.0.6",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -37,7 +37,7 @@
             }
         },
         "appleAuthKeyValue": {
-            "type": "securestring",
+            "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "Provider Authentication Token, obtained through your developer account https://developer.apple.com/account/ios/authkey/"
