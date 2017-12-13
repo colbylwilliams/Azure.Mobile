@@ -29,7 +29,7 @@
         "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]",
         "branch": "master",
         "repoURL": "https://github.com/colbylwilliams/Azure.Mobile.git",
-        "project": "if(equals(parameters('functionLanguage'),'C#'), 'https://github.com/colbylwilliams/Azure.Mobile/csharp', 'https://github.com/colbylwilliams/Azure.Mobile/javascript')]"
+        "project": "if(equals(parameters('functionLanguage'),'C#'), 'csharp', 'javascript')]"
     },
 
     "resources": [
