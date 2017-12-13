@@ -44,7 +44,7 @@ Most of these services have a generious free tier. [Sign up for a Azure free acc
 
 # About
 
-- Created by [Colby Williams](https://github.com/colbylwilliams) and [Nate Rickard](https://github.com/naterickard)
+- Created by [Colby Williams](https://github.com/colbylwilliams)
 
 ## Contributing
 
