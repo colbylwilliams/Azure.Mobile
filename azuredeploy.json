@@ -101,7 +101,6 @@
                     "apiVersion": "2016-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
-                        "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
                     "properties": {
