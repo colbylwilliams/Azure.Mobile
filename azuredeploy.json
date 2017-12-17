@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.3.4",
+    "contentVersion": "1.0.3.5",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -64,7 +64,7 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "siteConfig": {
                     "phpVersion": "off",
-                    "clientAffinityEnabled": true,
+                    "clientAffinityEnabled": false,
                     "hostingEnvironment": "",
                     "push": {
                         "isPushEnabled": true
