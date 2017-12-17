@@ -29,7 +29,7 @@
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
         "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]",
         "branch": "master",
-        "repoURL": "https://github.com/colbylwilliams/Azure.Mobile"
+        "repoURL": "https://github.com/colbylwilliams/Azure.Mobile.git"
     },
 
     "resources": [
