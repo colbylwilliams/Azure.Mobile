@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.3.3",
+    "contentVersion": "1.0.3.4",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -190,7 +190,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2017-10-01",
             "kind": "Storage",
             "location": "[resourceGroup().location]",
             "sku": {
