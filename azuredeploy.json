@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.2.5",
+    "contentVersion": "1.0.2.6",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -132,6 +132,8 @@
                     "apiVersion": "2016-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
+                        "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                         "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'appsettings')]",
                         "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'connectionstrings')]"
                     ],
