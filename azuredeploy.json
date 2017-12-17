@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.2.4",
+    "contentVersion": "1.0.2.5",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -113,7 +113,7 @@
                         "WEBSITE_CONTENTSHARE": "[variables('webSiteNameLower')]",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
-                        "PROJECT": "[if(equals(parameters('functionLanguage'),'C#'), 'csharp', if(equals(parameters('functionLanguage'),'Javascript'), 'javascript', 'csharp script'))]",
+                        "PROJECT": "[if(equals(parameters('functionLanguage'),'C#'), 'csharp', if(equals(parameters('functionLanguage'),'Javascript'), 'javascript', 'csharpscript'))]",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
