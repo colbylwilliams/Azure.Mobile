@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.2.9",
+    "contentVersion": "1.0.3.0",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -29,7 +29,7 @@
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
         "functionAppUrl": "[concat(variables('webSiteNameLower'),'.azurewebsites.net')]",
         "branch": "master",
-        "repoURL": "https://github.com/colbylwilliams/Azure.Mobile.git"
+        "repoURL": "https://github.com/colbylwilliams/Azure.Mobile"
     },
 
     "resources": [
@@ -40,7 +40,8 @@
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[variables('webSiteNameLower')]"
+                "name": "[variables('webSiteNameLower')]",
+                "hostingEnvironment": ""
             },
             "tags": {
                 "displayName": "App Service Plan"
@@ -63,6 +64,8 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "siteConfig": {
                     "phpVersion": "off",
+                    "clientAffinityEnabled": false,
+                    "hostingEnvironment": "",
                     "push": {
                         "isPushEnabled": true
                     }
@@ -137,9 +140,9 @@
                         "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'connectionstrings')]"
                     ],
                     "properties": {
-                        "repoUrl": "[variables('repoURL')]",
+                        "RepoUrl": "[variables('repoURL')]",
                         "branch": "[variables('branch')]",
-                        "isManualIntegration": true
+                        "IsManualIntegration": true
                     }
                 }
             ]
