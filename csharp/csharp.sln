@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2017
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp", "csharp.csproj", "{58AE23F0-CCA8-41DB-A6A9-A9658063A484}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp", "csharp/csharp.csproj", "{58AE23F0-CCA8-41DB-A6A9-A9658063A484}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
