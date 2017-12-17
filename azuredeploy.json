@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.3.1",
+    "contentVersion": "1.0.3.2",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -140,9 +140,9 @@
                         "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'connectionstrings')]"
                     ],
                     "properties": {
-                        "RepoUrl": "[variables('repoURL')]",
+                        "repoUrl": "[variables('repoURL')]",
                         "branch": "[variables('branch')]",
-                        "IsManualIntegration": true
+                        "isManualIntegration": true
                     }
                 }
             ]
