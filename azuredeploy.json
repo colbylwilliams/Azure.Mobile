@@ -12,7 +12,8 @@
             "type": "string",
             "allowedValues": [
                 "Javascript",
-                "C#"
+                "C#",
+                "C# Script (.csx)"
             ],
             "metadata": {
                 "description": "The language to write your serverless functions in."
@@ -45,9 +46,9 @@
                 "displayName": "App Service Plan"
             },
             "sku": {
-                "name": "B1",
-                "tier": "Basic",
-                "capacity": 1
+                "name": "Y1",
+                "tier": "Dynamic",
+                "capacity": 0
             }
         },
 
@@ -63,7 +64,6 @@
                 "clientAffinityEnabled": false,
                 "siteConfig": {
                     "phpVersion": "off",
-                    "alwaysOn": true,
                     "push": {
                         "isPushEnabled": true
                     }
@@ -106,14 +106,14 @@
                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
                     "properties": {
-                        "FUNCTION_APP_EDIT_MODE": "readonly",
-                        "FUNCTIONS_EXTENSION_VERSION": "~1",
+                        "FUNCTION_APP_EDIT_MODE": "[if(equals(parameters('functionLanguage'),'C#'), 'readonly', 'readwrite')]",
+                        "FUNCTIONS_EXTENSION_VERSION": "[if(equals(parameters('functionLanguage'),'C#'), 'beta', '~1')]",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": "true",
                         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "WEBSITE_CONTENTSHARE": "[variables('webSiteNameLower')]",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
-                        "PROJECT": "[if(equals(parameters('functionLanguage'),'C#'), 'csharp', 'javascript')]",
+                        "PROJECT": "[if(equals(parameters('functionLanguage'),'C#'), 'csharp', if(equals(parameters('functionLanguage'),'Javascript'), 'javascript', 'csharp script'))]",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2017-10-01').keys[0].value)]",
                         "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
