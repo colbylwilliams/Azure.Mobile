@@ -1,0 +1,27 @@
+
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+x64/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+
+
+*.DS_Store
+*.sln.cache
+*.cache
+*.pidb
+*.userprefs
+*.usertasks
+
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+*.userprefs
