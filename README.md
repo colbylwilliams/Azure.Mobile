@@ -38,7 +38,7 @@ _coming soon..._
 
 ## What is the price/cost?
 
-Most of these services have a generious free tier. [Sign up for a Azure free account][azure-free] to get $200 credit.
+Most of these services have a generous free tier. [Sign up for a Azure free account][azure-free] to get $200 credit.
 
 
 
