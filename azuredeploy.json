@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.3.6",
+    "contentVersion": "1.0.3.7",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -236,13 +236,13 @@
             "type": "securestring",
             "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]"
         },
-        "iOS": {
+        "Configure_iOS": {
             "type": "string",
-            "value": "[concat('AzureData.setup(\"', variables('documentDbName'), '\", key: \"', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey, '\", keyType: .master)')]"
+            "value": "[concat('AzureData.configure(forAccountNamed:\"', variables('documentDbName'), '\", withKey: \"', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey, '\", ofType: .master)')]"
         },
-        "Android": {
+        "Configure_Android": {
             "type": "string",
-            "value": "[concat('AzureData.init(applicationContext, \"', variables('documentDbName'), '\", \"', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey, '\", TokenType.MASTER)')]"
+            "value": "[concat('AzureData.configure(applicationContext, \"', variables('documentDbName'), '\", \"', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey, '\", TokenType.MASTER)')]"
         },
         "FunctionsUrl": {
             "type": "string",
