@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.3.5",
+    "contentVersion": "1.0.3.6",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -20,7 +20,6 @@
             }
         }
     },
-
     "variables": {
         "webSiteNameLower": "[toLower(parameters('webSiteName'))]",
         "documentDbName": "[concat('database', uniqueString(resourceGroup().id))]",
@@ -31,7 +30,6 @@
         "branch": "master",
         "repoURL": "https://github.com/colbylwilliams/Azure.Mobile.git"
     },
-
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
@@ -52,7 +50,6 @@
                 "capacity": 0
             }
         },
-
         {
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
@@ -98,7 +95,6 @@
                         }
                     }
                 },
-
                 {
                     "type": "config",
                     "name": "appsettings",
@@ -127,7 +123,6 @@
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]"
                     }
                 },
-
                 {
                     "type": "sourcecontrols",
                     "name": "web",
@@ -147,7 +142,6 @@
                 }
             ]
         },
-
         {
             "type": "Microsoft.Insights/components",
             "kind": "web",
@@ -165,7 +159,6 @@
                 "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]"
             ]
         },
-
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "name": "[variables('documentDbName')]",
@@ -186,7 +179,6 @@
                 ]
             }
         },
-
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
@@ -204,7 +196,6 @@
                 "name": "[variables('storageAccountName')]"
             }
         },
-
         {
             "type": "Microsoft.NotificationHubs/namespaces",
             "name": "[variables('notificationHubNamespace')]",
@@ -235,9 +226,24 @@
                 }
             ]
         }
-
     ],
     "outputs": {
+        "DatabaseName": {
+            "type": "string",
+            "value": "[variables('documentDbName')]"
+        },
+        "DatabaseKey": {
+            "type": "securestring",
+            "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]"
+        },
+        "iOS": {
+            "type": "string",
+            "value": "[concat('AzureData.setup(\"', variables('documentDbName'), '\", key: \"', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey, '\", keyType: .master)')]"
+        },
+        "Android": {
+            "type": "string",
+            "value": "[concat('AzureData.init(applicationContext, \"', variables('documentDbName'), '\", \"', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey, '\", TokenType.MASTER)')]"
+        },
         "FunctionsUrl": {
             "type": "string",
             "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))).hostNames[0])]"
