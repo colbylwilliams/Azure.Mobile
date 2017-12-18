@@ -29,6 +29,9 @@ We're working on several different configruration options, each with a one-click
 [![Deploy to Azure][azure-deploy-button]][azure-deploy]
 
 
+- [iOS SDK][azure-ios]
+- [Android SDK][azure-android]
+
 
 ## How is this different than Azure Mobile Apps (formally Azure App Services)?
 
@@ -56,6 +59,8 @@ Licensed under the MIT License (MIT). See [LICENSE](LICENSE) for details.
 
 
 
+[azure-ios]:https://aka.ms/azureios
+[azure-android]:https://aka.ms/azureandroid
 
 [cosmos]:https://azure.microsoft.com/en-us/services/cosmos-db
 
