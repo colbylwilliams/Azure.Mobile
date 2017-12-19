@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.3.8",
+    "contentVersion": "1.0.4.5",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -37,17 +37,9 @@
             "name": "[variables('webSiteNameLower')]",
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
-            "properties": {
-                "name": "[variables('webSiteNameLower')]",
-                "hostingEnvironment": ""
-            },
-            "tags": {
-                "displayName": "App Service Plan"
-            },
+            "properties": {},
             "sku": {
-                "name": "Y1",
-                "tier": "Dynamic",
-                "capacity": 0
+                "name": "Y1"
             }
         },
         {
@@ -57,12 +49,10 @@
             "apiVersion": "2016-08-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[variables('webSiteNameLower')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "siteConfig": {
                     "phpVersion": "off",
                     "clientAffinityEnabled": false,
-                    "hostingEnvironment": "",
                     "push": {
                         "isPushEnabled": true
                     }
@@ -70,9 +60,7 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]",
-                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ]
         },
         {
@@ -91,20 +79,14 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
-                "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
+                "[resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]"
             ]
         },
         {
             "type": "Microsoft.Web/sites/config",
             "name": "[concat(variables('webSiteNameLower'), '/appsettings')]",
             "apiVersion": "2016-08-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
-                "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-            ],
             "properties": {
                 "FUNCTION_APP_EDIT_MODE": "[if(equals(parameters('functionLanguage'),'C#'), 'readonly', 'readwrite')]",
                 "FUNCTIONS_EXTENSION_VERSION": "[if(equals(parameters('functionLanguage'),'C#'), 'beta', '~1')]",
@@ -123,7 +105,10 @@
                 "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                 "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
                 "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]"
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]"
+            ]           
         },
         {
             "type": "Microsoft.Web/sites/sourcecontrols",
@@ -131,10 +116,7 @@
             "apiVersion": "2016-08-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
-                "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[concat(resourceId('Microsoft.Web/sites', variables('webSiteNameLower')), '/config/appsettings')]",
-                "[concat(resourceId('Microsoft.Web/sites', variables('webSiteNameLower')), '/config/connectionstrings')]"
+                "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'appsettings')]"
             ],
             "properties": {
                 "repoUrl": "[variables('repoURL')]",
@@ -152,8 +134,7 @@
                 "ApplicationId": "[variables('webSiteNameLower')]"
             },
             "tags": {
-                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('webSiteNameLower')))]": "Resource",
-                "displayName": "Application Insights"
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('webSiteNameLower')))]": "Resource"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]"
@@ -165,8 +146,7 @@
             "apiVersion": "2015-04-08",
             "location": "[resourceGroup().location]",
             "tags": {
-                "defaultExperience": "DocumentDB",
-                "displayName": "Document Database"
+                "defaultExperience": "DocumentDB"
             },
             "properties": {
                 "name": "[variables('documentDbName')]",
@@ -182,48 +162,37 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
-            "apiVersion": "2017-10-01",
+            "apiVersion": "2017-06-01",
             "kind": "Storage",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
             },
-            "tags": {
-                "displayName": "Storage Account"
-            },
-            "properties": {
-                "name": "[variables('storageAccountName')]"
-            }
+            "properties": {}
         },
         {
             "type": "Microsoft.NotificationHubs/namespaces",
             "name": "[variables('notificationHubNamespace')]",
-            "apiVersion": "2017-04-01",
+            "apiVersion": "2014-09-01",
             "location": "[resourceGroup().location]",
-            "tags": {},
             "scale": null,
             "sku": {
                 "name": "Free"
             },
             "properties": {
-                "name": "[variables('notificationHubNamespace')]",
                 "namespaceType": "NotificationHub"
-            },
-            "resources": [
-                {
-                    "type": "notificationHubs",
-                    "name": "[variables('notificationHubName')]",
-                    "apiVersion": "2017-04-01",
-                    "location": "[resourceGroup().location]",
-                    "scale": null,
-                    "properties": {
-                        "name": "[variables('notificationHubName')]"
-                    },
-                    "dependsOn": [
-                        "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]"
-                    ]
-                }
+            }
+        },
+        {
+            "type": "Microsoft.NotificationHubs/namespaces/notificationHubs",
+            "name": "[concat(variables('notificationHubNamespace'), '/', variables('notificationHubName'))]",
+            "apiVersion": "2014-09-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {},
+            "dependsOn": [
+                "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]"
             ]
         }
     ],
@@ -231,10 +200,6 @@
         "DatabaseName": {
             "type": "string",
             "value": "[variables('documentDbName')]"
-        },
-        "DatabaseKey": {
-            "type": "securestring",
-            "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]"
         },
         "Configure_iOS": {
             "type": "string",
