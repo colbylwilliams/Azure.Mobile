@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.4.8",
+    "contentVersion": "1.0.4.9",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -111,7 +111,7 @@
                         "AzureWebJobsSecretStorageType": "Blob",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
-                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components/', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]",
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('webSiteNameLower')), '2015-05-01').InstrumentationKey]",
                         "MS_NotificationHubId": "[resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]",
                         "MS_NotificationHubName": "[variables('notificationHubName')]"
                     },
@@ -129,11 +129,15 @@
                         "isManualIntegration": true
                     },
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
                         "[resourceId('Microsoft.Web/serverfarms', variables('webSiteNameLower'))]",
-                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                        "[resourceId('Microsoft.Web/sites', variables('webSiteNameLower'))]",
                         "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'appsettings')]",
-                        "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'connectionstrings')]"
+                        "[resourceId('Microsoft.Web/sites/config', variables('webSiteNameLower'), 'connectionstrings')]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                        "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]",
+                        "[resourceId('Microsoft.Insights/components', variables('webSiteNameLower'))]"
                     ]                    
                 }
             ]
