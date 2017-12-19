@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.4.6",
+    "contentVersion": "1.0.4.7",
     "parameters": {
         "webSiteName": {
             "type": "string",
@@ -200,8 +200,8 @@
             },
             "resources": [
                 {
-                    "type": "notificationHubs",
-                    "name": "[variables('notificationHubName')]",
+                    "type": "Microsoft.NotificationHubs/namespaces/notificationHubs",
+                    "name": "[concat(variables('notificationHubNamespace'), '/', variables('notificationHubName'))]",
                     "apiVersion": "2014-09-01",
                     "location": "[resourceGroup().location]",
                     "properties": {
