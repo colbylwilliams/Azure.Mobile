@@ -1,12 +1,11 @@
 # Azure.Mobile
 
-**Azure.Mobile is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
+**[Azure.Mobile](https://aka.ms/mobile) is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
 
-The objective of the framework is to:
+**Azure.Mobile has two simple objectives:**
 
-1. Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks
-2. Provide native iOS and android SDKs with delightful APIs to interact with the services
-
+1. **Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks**
+2. **Provide native iOS and android SDKs with delightful APIs to interact with the services**
 
 
 ## What's included?
