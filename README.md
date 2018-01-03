@@ -2,10 +2,10 @@
 
 **[Azure.Mobile](https://aka.ms/mobile) is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
 
-_Azure.Mobile has two simple objectives:_
+Azure.Mobile has two simple objectives:
 
-1. _Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks_
-2. _Provide native iOS and android SDKs with delightful APIs to interact with the services_
+1. Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks
+2. Provide native iOS and android SDKs with delightful APIs to interact with the services
 
 
 ## What's included?
@@ -23,9 +23,35 @@ It includes one-click deployment templates and native client SDKs for the follow
 
 ## How do I use it?
 
-We're working on several different configruration options, each with a one-click-deploy template.
+### 1. Azure Account
+
+To use Azure.Mobile, you'll need an Azure account.  If you already have one, make sure you’re [logged in](https://portal.azure.com) and move to the next step.
+
+If you don't have an Azure account, [sign up for a Azure free account][azure-free] before moving to the next step.
+
+
+### 2. Deploy Azure Services
+
+Deploying the Azure resources is as simple as clicking the link below then filling out the form per the instructions under the link:
 
 [![Deploy to Azure][azure-deploy-button]][azure-deploy]
+
+
+#### Template Form
+
+- **Subscription:** Choose which Azure subscription you want to use to deploy the backend.  If you only have one choice, or you don't see this option at all, don't sweat it.
+- **Resource group:** Unless you have an existing Resource group that you know you want to use, select __Create new__ and provide a name for the new group.  _(a resource group is essentially a parent folder to deploy the new database, app service, etc. to)_
+- **Location:** Select the region to deploy the new resources. You want to choose a region that best describes your location (or your users location).
+- **Web Site Name:** Provide a name for your app.  This can be the same name as your Resource group, and will be used as the subdomain for your service endpoint.  For example, if you used `superawesome`, your serverless app would live at `superawesome.azurewebsites.net`.
+- **Function Language:** The template will deploy a serverless app with a few boilerplate functions.  This is the programming language those functions will be written in.  Choose the language you're most comfortable with.
+
+
+#### Agree & Purchase
+
+Read and agree to the _TERMS AND CONDITIONS_, then click **Purchase**.
+
+
+### 3. Configure iOS/Android app
 
 
 - [iOS SDK][azure-ios]
