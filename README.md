@@ -4,8 +4,8 @@
 
 **Azure.Mobile has two simple objectives:**
 
-1. **Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks**
-2. **Provide native iOS and android SDKs with delightful APIs to interact with the services**
+**1. Enable developers to create, configure, deploy all necessary backend services fast — ideally under 10 minutes with only a few clicks**
+**2. Provide native iOS and android SDKs with delightful APIs to interact with the services**
 
 
 ## What's included?
