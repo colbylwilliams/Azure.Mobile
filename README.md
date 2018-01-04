@@ -37,21 +37,21 @@ Deploying the Azure resources is as simple as clicking the link below then filli
 [![Deploy to Azure][azure-deploy-button]][azure-deploy]
 
 
-### Template Form
+## 3. Fill in Template Form
 
-#### _Subscription:_
+#### `Subscription:`
 Choose which Azure subscription you want to use to deploy the backend.  If you only have one choice, or you don't see this option at all, don't sweat it.
 
-#### _Resource group:_
+#### `Resource group:`
 Unless you have an existing Resource group that you know you want to use, select __Create new__ and provide a name for the new group.  _(a resource group is essentially a parent folder to deploy the new database, app service, etc. to)_
 
-#### _Location:_
+#### `Location:`
 Select the region to deploy the new resources. You want to choose a region that best describes your location (or your users location).
 
-#### _Web Site Name:_
+#### `Web Site Name:`
 Provide a name for your app.  This can be the same name as your Resource group, and will be used as the subdomain for your service endpoint.  For example, if you used `superawesome`, your serverless app would live at `superawesome.azurewebsites.net`.
 
-#### _Function Language:_
+#### `Function Language:`
 The template will deploy a serverless app with a few boilerplate functions.  This is the programming language those functions will be written in.  Choose the language you're most comfortable with.
 
 
@@ -60,11 +60,12 @@ The template will deploy a serverless app with a few boilerplate functions.  Thi
 Read and agree to the _TERMS AND CONDITIONS_, then click **Purchase**.
 
 
-## 3. Configure iOS/Android app
+## 4. Configure iOS/Android app
 
 
 - [iOS SDK][azure-ios]
 - [Android SDK][azure-android]
+
 
 
 # How is this different than Azure Mobile Apps (formally Azure App Services)?
