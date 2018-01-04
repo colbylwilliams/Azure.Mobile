@@ -39,20 +39,15 @@ Deploying the Azure resources is as simple as clicking the link below then filli
 
 ## 3. Fill in Template Form
 
-#### `Subscription:`
-Choose which Azure subscription you want to use to deploy the backend.  If you only have one choice, or you don't see this option at all, don't sweat it.
+- **`Subscription:`** Choose which Azure subscription you want to use to deploy the backend.  If you only have one choice, or you don't see this option at all, don't sweat it.
 
-#### `Resource group:`
-Unless you have an existing Resource group that you know you want to use, select __Create new__ and provide a name for the new group.  _(a resource group is essentially a parent folder to deploy the new database, app service, etc. to)_
+- **`Resource group:`** Unless you have an existing Resource group that you know you want to use, select __Create new__ and provide a name for the new group.  _(a resource group is essentially a parent folder to deploy the new database, app service, etc. to)_
 
-#### `Location:`
-Select the region to deploy the new resources. You want to choose a region that best describes your location (or your users location).
+- **`Location:`** Select the region to deploy the new resources. You want to choose a region that best describes your location (or your users location).
 
-#### `Web Site Name:`
-Provide a name for your app.  This can be the same name as your Resource group, and will be used as the subdomain for your service endpoint.  For example, if you used `superawesome`, your serverless app would live at `superawesome.azurewebsites.net`.
+- **`Web Site Name:`** Provide a name for your app.  This can be the same name as your Resource group, and will be used as the subdomain for your service endpoint.  For example, if you used `superawesome`, your serverless app would live at `superawesome.azurewebsites.net`.
 
-#### `Function Language:`
-The template will deploy a serverless app with a few boilerplate functions.  This is the programming language those functions will be written in.  Choose the language you're most comfortable with.
+- **`Function Language:`** The template will deploy a serverless app with a few boilerplate functions.  This is the programming language those functions will be written in.  Choose the language you're most comfortable with.
 
 
 ### Agree & Purchase
