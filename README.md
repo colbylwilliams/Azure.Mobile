@@ -21,50 +21,59 @@ It includes one-click deployment templates and native client SDKs for the follow
 
 
 
-## How do I use it?
+# Getting Started
 
-### 1. Azure Account
+## 1. Azure Account
 
 To use Azure.Mobile, you'll need an Azure account.  If you already have one, make sure you’re [logged in](https://portal.azure.com) and move to the next step.
 
 If you don't have an Azure account, [sign up for a Azure free account][azure-free] before moving to the next step.
 
 
-### 2. Deploy Azure Services
+## 2. Deploy Azure Services
 
 Deploying the Azure resources is as simple as clicking the link below then filling out the form per the instructions under the link:
 
 [![Deploy to Azure][azure-deploy-button]][azure-deploy]
 
 
-#### Template Form
+### Template Form
 
-- **Subscription:** Choose which Azure subscription you want to use to deploy the backend.  If you only have one choice, or you don't see this option at all, don't sweat it.
-- **Resource group:** Unless you have an existing Resource group that you know you want to use, select __Create new__ and provide a name for the new group.  _(a resource group is essentially a parent folder to deploy the new database, app service, etc. to)_
-- **Location:** Select the region to deploy the new resources. You want to choose a region that best describes your location (or your users location).
-- **Web Site Name:** Provide a name for your app.  This can be the same name as your Resource group, and will be used as the subdomain for your service endpoint.  For example, if you used `superawesome`, your serverless app would live at `superawesome.azurewebsites.net`.
-- **Function Language:** The template will deploy a serverless app with a few boilerplate functions.  This is the programming language those functions will be written in.  Choose the language you're most comfortable with.
+#### _Subscription:_
+Choose which Azure subscription you want to use to deploy the backend.  If you only have one choice, or you don't see this option at all, don't sweat it.
+
+#### _Resource group:_
+Unless you have an existing Resource group that you know you want to use, select __Create new__ and provide a name for the new group.  _(a resource group is essentially a parent folder to deploy the new database, app service, etc. to)_
+
+#### _Location:_
+Select the region to deploy the new resources. You want to choose a region that best describes your location (or your users location).
+
+#### _Web Site Name:_
+Provide a name for your app.  This can be the same name as your Resource group, and will be used as the subdomain for your service endpoint.  For example, if you used `superawesome`, your serverless app would live at `superawesome.azurewebsites.net`.
+
+#### _Function Language:_
+The template will deploy a serverless app with a few boilerplate functions.  This is the programming language those functions will be written in.  Choose the language you're most comfortable with.
 
 
-#### Agree & Purchase
+### Agree & Purchase
 
 Read and agree to the _TERMS AND CONDITIONS_, then click **Purchase**.
 
 
-### 3. Configure iOS/Android app
+## 3. Configure iOS/Android app
 
 
 - [iOS SDK][azure-ios]
 - [Android SDK][azure-android]
 
 
-## How is this different than Azure Mobile Apps (formally Azure App Services)?
+# How is this different than Azure Mobile Apps (formally Azure App Services)?
 
 _coming soon..._
 
 
 
-## What is the price/cost?
+# What is the price/cost?
 
 Most of these services have a generous free tier. [Sign up for a Azure free account][azure-free] to get $200 credit.
 
