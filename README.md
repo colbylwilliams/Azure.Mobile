@@ -63,9 +63,9 @@ Read and agree to the _TERMS AND CONDITIONS_, then click **Purchase**.
 
 
 
-# How is this different than Azure Mobile Apps (formally Azure App Services)?
+# How is this different than Azure Mobile Apps?
 
-_coming soon..._
+Azure Mobile Apps _(formally Azure App Services)_ is...
 
 
 
