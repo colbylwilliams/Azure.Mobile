@@ -49,10 +49,7 @@ Deploying the Azure resources is as simple as clicking the link below then filli
 
 - **`Function Language:`** The template will deploy a serverless app with a few boilerplate functions.  This is the programming language those functions will be written in.  Choose the language you're most comfortable with.
 
-
-### Agree & Purchase
-
-Read and agree to the _TERMS AND CONDITIONS_, then click **Purchase**.
+- **Agree & Purchase** Read and agree to the _TERMS AND CONDITIONS_, then click _Purchase_.
 
 
 ## 4. Configure iOS/Android app
