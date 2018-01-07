@@ -1,3 +1,6 @@
+_Looking for the client SDKs? Here ya go: [iOS SDK][azure-ios], [Android SDK][azure-android]._
+
+
 # Azure.Mobile
 
 **[Azure.Mobile](https://aka.ms/mobile) is a framework for rapidly creating iOS and android apps with modern, highly-scalable backends on Azure.**
