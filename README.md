@@ -32,16 +32,16 @@ If you don't have an Azure account, [sign up for a Azure free account][azure-fre
 
 ## 2. Deploy Azure Services
 
-Deploying the Azure resources is as simple as clicking the link below then filling out the form per the instructions under the link:
+Deploying the Azure resources is as simple as clicking the link below then filling out the form per the instructions in the next step:
 
 [![Deploy to Azure][azure-deploy-button]][azure-deploy]
 
 
 ## 3. Fill in Template Form
 
-There are a few fields you need to fill out in order to create and deploy the Azure resources defined in the template.
+There's a few fields to fill out in order to create and deploy the Azure resources defined in the template.
 
-Below you’ll find a brief explanation and guidance for filling in each field, please [file an issue](issues/new?labels=docs) if you require additional help.
+Below is a brief explanation/guidance for filling in each field, please [file an issue](issues/new?labels=docs) if you have questions or require additional help.
 
 
 - **`Subscription:`** Choose which Azure subscription you want to use to deploy the backend.  If you only have one choice, or you don't see this option at all, don't sweat it.
@@ -59,6 +59,7 @@ Below you’ll find a brief explanation and guidance for filling in each field, 
 
 ## 4. Configure iOS/Android app
 
+Once you deploy the Azure services, all that's left to do is your app.  You'll find detailed instructions for setting up and using the iOS & Android SDKs in their respective repos:
 
 - [iOS SDK][azure-ios]
 - [Android SDK][azure-android]
