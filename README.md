@@ -1,4 +1,4 @@
-_Looking for the client SDKs? Here ya go: [iOS SDK][azure-ios], [Android SDK][azure-android]._
+_Looking for the client SDKs? You can find them in the [Azure.iOS][azure-ios] and [Azure.Android][azure-android] repos._
 
 
 # Azure.Mobile
