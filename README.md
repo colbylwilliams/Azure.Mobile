@@ -100,7 +100,7 @@ Licensed under the MIT License (MIT). See [LICENSE](LICENSE) for details.
 
 [cosmos]:https://azure.microsoft.com/en-us/services/cosmos-db
 
-[azure-deploy]:https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcolbylwilliams%2FAzure.Mobile%2Fmaster%2Fazuredeploy.json
+[azure-deploy]:https://aka.ms/mobile-deploy
 [azure-deploy-button]:https://azuredeploy.net/deploybutton.svg
 
 [azure-visualize]:http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure.Mobile%2Fmaster%2Fazuredeploy.json
