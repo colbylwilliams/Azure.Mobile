@@ -2,9 +2,9 @@
 
 namespace csharp
 {
-	public static class TaskExtensions
-	{
-		/* TaskStatus enum
+   public static class TaskExtensions
+   {
+      /* TaskStatus enum
          * Created, = 0
          * WaitingForActivation, = 1
          * WaitingToRun, = 2
@@ -13,6 +13,6 @@ namespace csharp
          * RanToCompletion, = 5
          * Canceled, = 6
          * Faulted = 7  */
-		public static bool IsNullFinishCanceledOrFaulted(this Task task) => task == null || (int)task.Status >= 5;
-	}
+      public static bool IsNullFinishCanceledOrFaulted(this Task task) => task == null || (int)task.Status >= 5;
+   }
 }
