@@ -53,7 +53,7 @@ namespace csharp
 					return null;
 				}
 
-				return $"{provider}|{stableSid}";
+				return $"{provider}-{stableSid}";
 			}
 
 			return null;

@@ -20,7 +20,7 @@ namespace csharp
 {
     public static class GetDataToken
     {
-		const string AnonymousId = "anonymous_user";
+		const string AnonymousId = "anonymous-user";
 
 		const int TokenDurationSeconds = 18000; // 5 hours
 		const double TokenRefreshSeconds = 600; // 10 minutes
