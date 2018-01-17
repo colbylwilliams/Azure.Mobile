@@ -38,8 +38,9 @@ namespace csharp
 
 		[Authorize]
 		[FunctionName(nameof(GetDataToken))]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/data/{databaseId}/{collectionId}/token")]
-			string databaseId, string collectionId, HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run(
+        	[HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/data/{databaseId}/{collectionId}/token")]
+			HttpRequestMessage req, string databaseId, string collectionId, TraceWriter log)
         {
 			try
 			{
