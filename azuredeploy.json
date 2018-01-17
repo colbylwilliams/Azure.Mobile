@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.4.9",
+    "contentVersion": "1.0.5.0",
     "parameters": {
         "functionAppName": {
             "type": "string",
@@ -26,7 +26,9 @@
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
         "notificationHubNamespace": "[concat('namespace', uniqueString(resourceGroup().id))]",
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
+        "keyVaultName": "[concat('keyvault', uniqueString(resourceGroup().id))]",
         "functionAppUrl": "[concat(variables('functionAppNameLower'),'.azurewebsites.net')]",
+        "identityResourceId": "[concat(resourceId('Microsoft.Web/sites', variables('functionAppNameLower')),'/providers/Microsoft.ManagedIdentity/Identities/default')]",
         "branch": "master",
         "repoURL": "https://github.com/colbylwilliams/Azure.Mobile.git"
     },
@@ -116,7 +118,9 @@
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('functionAppNameLower')), '2015-05-01').InstrumentationKey]",
                         "MS_NotificationHubId": "[resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]",
-                        "MS_NotificationHubName": "[variables('notificationHubName')]"
+                        "MS_NotificationHubName": "[variables('notificationHubName')]",
+                        "AzureKeyVaultName": "[variables('keyVaultName')]",
+                        "AzureKeyVaultUrl": "[concat('https://', variables('keyVaultName'), 'vault.azure.net/')]"
                     },
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('functionAppNameLower'))]"
@@ -141,9 +145,43 @@
                         "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
                         "[resourceId('Microsoft.NotificationHubs/namespaces', variables('notificationHubNamespace'))]",
                         "[resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]",
+                        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
                         "[resourceId('Microsoft.Insights/components', variables('functionAppNameLower'))]"
                     ]                    
                 }
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[variables('keyVaultName')]",
+            "apiVersion": "2015-06-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[reference(variables('identityResourceId'), '2015-08-31-PREVIEW').tenantId]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[reference(variables('identityResourceId'), '2015-08-31-PREVIEW').tenantId]",
+                        "objectId": "[reference(variables('identityResourceId'), '2015-08-31-PREVIEW').principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": false
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppNameLower'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('functionAppNameLower'))]"
             ]
         },
         {
