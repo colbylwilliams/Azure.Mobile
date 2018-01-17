@@ -120,7 +120,7 @@
                         "MS_NotificationHubId": "[resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs', variables('notificationHubNamespace'), variables('notificationHubName'))]",
                         "MS_NotificationHubName": "[variables('notificationHubName')]",
                         "AzureKeyVaultName": "[variables('keyVaultName')]",
-                        "AzureKeyVaultUrl": "[concat('https://', variables('keyVaultName'), 'vault.azure.net/')]"
+                        "AzureKeyVaultUrl": "[concat('https://', variables('keyVaultName'), '.vault.azure.net')]"
                     },
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('functionAppNameLower'))]"
