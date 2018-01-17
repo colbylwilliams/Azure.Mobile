@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,13 +44,25 @@ namespace csharp
         {
             try
             {
+                SecretBundle secretBundle = null;
+
                 var userId = Thread.CurrentPrincipal.GetClaimsIdentity()?.UniqueIdentifier() ?? AnonymousId;
 
-                var secretBundle = await KeyVaultClient.GetSecretAsync(EnvironmentVariables.KeyVaultUrl, userId);
-                
-    
+                try
+                {
+                    secretBundle = await KeyVaultClient.GetSecretAsync(EnvironmentVariables.KeyVaultUrl, userId);
+                }
+                catch (KeyVaultErrorException kvex)
+                {
+                    if (kvex.Body.Error.Code != "SecretNotFound")
+                    {
+                        throw;
+                    }
+                }
+
+
                 // if the token is still valid for the next 10 mins return it
-                if (secretBundle.Attributes.Expires.HasValue && secretBundle.Attributes.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds < TokenRefreshSeconds)
+                if (secretBundle != null && secretBundle.Attributes.Expires.HasValue && secretBundle.Attributes.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds < TokenRefreshSeconds)
                 {
                     return req.CreateResponse(HttpStatusCode.OK, secretBundle.Value);
                 }
