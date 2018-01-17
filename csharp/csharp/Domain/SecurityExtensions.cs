@@ -78,7 +78,8 @@ namespace csharp
 
 		public static ClaimsIdentity GetClaimsIdentity(this IPrincipal currentPricipal)
 		{
-			if (currentPricipal.Identity.IsAuthenticated
+			if (currentPricipal?.Identity != null
+				&& currentPricipal.Identity.IsAuthenticated
 				&& currentPricipal is ClaimsPrincipal principal
 				&& principal.Identity is ClaimsIdentity identity)
 			{
