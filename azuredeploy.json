@@ -52,6 +52,9 @@
             "name": "[variables('functionAppNameLower')]",
             "apiVersion": "2016-08-01",
             "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "properties": {
                 "name": "[variables('functionAppNameLower')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('functionAppNameLower'))]",
