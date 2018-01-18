@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Net.Http;
+
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -13,8 +15,6 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-
-using HttpStatusCode = System.Net.HttpStatusCode;
 
 namespace csharp
 {
@@ -38,9 +38,9 @@ namespace csharp
 
         [Authorize]
         [FunctionName(nameof(GetDataToken))]
-        public static async Task<HttpResponseMessage> Run(
+        public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/data/{databaseId}/{collectionId}/token")]
-            HttpRequestMessage req, string databaseId, string collectionId, TraceWriter log)
+            HttpRequest req, string databaseId, string collectionId, TraceWriter log)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace csharp
                 // if the token is still valid for the next 10 mins return it
                 if (secretBundle != null && secretBundle.Attributes.Expires.HasValue && secretBundle.Attributes.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds < TokenRefreshSeconds)
                 {
-                    return req.CreateResponse(HttpStatusCode.OK, secretBundle.Value);
+                    return new OkObjectResult(secretBundle.Value);
                 }
 
 
@@ -78,17 +78,17 @@ namespace csharp
 
                     //log.Info($"Updated User Store:\n{userStore}");
 
-                    return req.CreateResponse(HttpStatusCode.OK, secretBundle.Value);
+                    return new OkObjectResult(secretBundle.Value);
                 }
 
 
-                return req.CreateResponse(HttpStatusCode.InternalServerError);
+                return new StatusCodeResult(500);
             }
             catch (Exception ex)
             {
                 log.Error(ex.Message, ex);
 
-                return req.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+                return new StatusCodeResult(500);
             }
         }
     }
