@@ -18,7 +18,7 @@ namespace csharp
         static string GetUserPermissionId(string databaseId, string userId, PermissionMode permissionMode) => $"{databaseId}-{userId}-{permissionMode.ToString().ToUpper()}";
 
 
-        public static async Task<Permission> GetOrCreatePermission(this DocumentClient client, (string DatabaseId, string CollectionId) collection, string userId, PermissionMode permissionMode, int durationInSeconds, TraceWriter log = null)
+        public static async Task<Permission> GetOrCreatePermission(this DocumentClient client, (string DatabaseId, string CollectionId) collection, string userId, PermissionMode permissionMode, int durationInSeconds, TraceWriter log)
         {
             var permissionId = string.Empty;
 
@@ -26,7 +26,7 @@ namespace csharp
             {
                 log?.Info(" ");
 
-                await client.EnsureCollection(collection);
+                await client.EnsureCollection(collection, log);
 
                 log?.Info($" ... getting collection ({collection.CollectionId}) in database ({collection.DatabaseId})");
 
@@ -95,7 +95,7 @@ namespace csharp
 
 
 
-        static async Task<Permission> CreateNewPermission(this DocumentClient client, string databaseId, DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, int durationInSeconds, TraceWriter log = null)
+        static async Task<Permission> CreateNewPermission(this DocumentClient client, string databaseId, DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, int durationInSeconds, TraceWriter log)
         {
             log?.Info($" ... creating new permission ({permissionId}) for collection ({collection?.Id})");
 
@@ -152,7 +152,7 @@ namespace csharp
         }
 
 
-        static async Task<(User user, bool created)> GetOrCreateUser(this DocumentClient client, string databaseId, string userId, TraceWriter log = null)
+        static async Task<(User user, bool created)> GetOrCreateUser(this DocumentClient client, string databaseId, string userId, TraceWriter log)
         {
             User user = null;
 
@@ -247,16 +247,16 @@ namespace csharp
         static bool IsInitialized((string DatabaseId, string CollectionId) collection) => _collectionStatuses.TryGetValue(collection, out ClientStatus status) && status == ClientStatus.Initialized;
 
 
-        static async Task EnsureCollection(this DocumentClient client, (string DatabaseId, string CollectionId) collection)
+        static async Task EnsureCollection(this DocumentClient client, (string DatabaseId, string CollectionId) collection, TraceWriter log)
         {
-            if (!(IsInitialized(collection) || await client.InitializeCollection(collection)))
+            if (!(IsInitialized(collection) || await client.InitializeCollection(collection, log)))
             {
                 throw new Exception($"Could not find Document Collection in Database {collection.DatabaseId} with CollectionId: {collection.CollectionId}");
             }
         }
 
 
-        static async Task<bool> InitializeCollection(this DocumentClient client, (string DatabaseId, string CollectionId) collection, TraceWriter log = null)
+        static async Task<bool> InitializeCollection(this DocumentClient client, (string DatabaseId, string CollectionId) collection, TraceWriter log)
         {
             if (!(_databaseStatuses.TryGetValue(collection.DatabaseId, out ClientStatus databaseStatus) && databaseStatus == ClientStatus.Initialized))
             {
@@ -272,7 +272,7 @@ namespace csharp
         }
 
 
-        static async Task CreateDatabaseIfNotExistsAsync(this DocumentClient client, string databaseId, TraceWriter log = null)
+        static async Task CreateDatabaseIfNotExistsAsync(this DocumentClient client, string databaseId, TraceWriter log)
         {
             if (_databaseCreationTasks.TryGetValue(databaseId, out Task<ResourceResponse<Database>> task) && !task.IsNullFinishCanceledOrFaulted())
             {
@@ -331,13 +331,13 @@ namespace csharp
         }
 
 
-        static async Task CreateCollectionIfNotExistsAsync<T>(this DocumentClient client, string databaseId, TraceWriter log = null)
+        static async Task CreateCollectionIfNotExistsAsync<T>(this DocumentClient client, string databaseId, TraceWriter log)
         {
             await client.CreateCollectionIfNotExistsAsync((databaseId, typeof(T).Name), log);
         }
 
 
-        static async Task CreateCollectionIfNotExistsAsync(this DocumentClient client, (string DatabaseId, string CollectionId) collection, TraceWriter log = null)
+        static async Task CreateCollectionIfNotExistsAsync(this DocumentClient client, (string DatabaseId, string CollectionId) collection, TraceWriter log)
         {
             if (_collectionCreationTasks.TryGetValue(collection, out Task<ResourceResponse<DocumentCollection>> task) && !task.IsNullFinishCanceledOrFaulted())
             {
