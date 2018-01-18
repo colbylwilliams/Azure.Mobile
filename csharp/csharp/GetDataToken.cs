@@ -116,9 +116,11 @@ namespace csharp
         // example userId: google|sid:uir7d29343a3gufe414098b063199430
         static string GetSecretName(string databaseId, string collectionId, string userId)
         {
-            const char pipe = '|', colon = ':', hyphen = '-';
+            const char pipe = '|', colon = ':', hyphen = '-', underscore = '_';
 
-            var normalizedUserId = userId.Replace(pipe, hyphen).Replace(colon, hyphen);
+            var normalizedUserId = userId.Replace(pipe, hyphen)
+                                         .Replace(colon, hyphen)
+                                         .Replace(underscore, hyphen);
 
             return $"{databaseId}-{collectionId}-{normalizedUserId}";
         }
