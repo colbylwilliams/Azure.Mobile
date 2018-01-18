@@ -13,7 +13,7 @@ namespace csharp
     public static class DocumentClientExtensions
     {
 
-        static RequestOptions permissionRequestOptions(int durationInSeconds) => new RequestOptions { ResourceTokenExpirySeconds = durationInSeconds };
+        static RequestOptions PermissionRequestOptions(int durationInSeconds) => new RequestOptions { ResourceTokenExpirySeconds = durationInSeconds };
 
         static string GetUserPermissionId(string databaseId, string userId, PermissionMode permissionMode) => $"{databaseId}-{userId}-{permissionMode.ToString().ToUpper()}";
 
@@ -24,8 +24,6 @@ namespace csharp
 
             try
             {
-                log?.Info(" ");
-
                 await client.EnsureCollection(collection, log);
 
                 log?.Info($" ... getting collection ({collection.CollectionId}) in database ({collection.DatabaseId})");
@@ -56,7 +54,7 @@ namespace csharp
                     {
                         log?.Info($" ... getting permission ({permissionId}) at uri: {permissionUri}");
 
-                        var permissionResponse = await client.ReadPermissionAsync(permissionUri, permissionRequestOptions(durationInSeconds));
+                        var permissionResponse = await client.ReadPermissionAsync(permissionUri, PermissionRequestOptions(durationInSeconds));
 
                         permission = permissionResponse?.Resource;
 
@@ -103,7 +101,7 @@ namespace csharp
 
             try
             {
-                var permissionResponse = await client.CreatePermissionAsync(user.SelfLink, newPermission, permissionRequestOptions(durationInSeconds));
+                var permissionResponse = await client.CreatePermissionAsync(user.SelfLink, newPermission, PermissionRequestOptions(durationInSeconds));
 
                 var permission = permissionResponse?.Resource;
 
@@ -130,7 +128,7 @@ namespace csharp
 
                         log?.Info($" ... creating new permission ({permissionId}) for collection ({collection?.Id})");
 
-                        var permissionResponse = await client.CreatePermissionAsync(user.SelfLink, newPermission, permissionRequestOptions(durationInSeconds));
+                        var permissionResponse = await client.CreatePermissionAsync(user.SelfLink, newPermission, PermissionRequestOptions(durationInSeconds));
 
                         var permission = permissionResponse?.Resource;
 
