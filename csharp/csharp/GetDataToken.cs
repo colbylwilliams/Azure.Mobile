@@ -111,6 +111,16 @@ namespace csharp
             }
         }
 
-        static string GetSecretName(string databaseId, string collectionId, string userId) => $"{databaseId}-{collectionId}-{userId}";
+
+        // The name must be a string 1-127 characters in length containing only 0-9, a-z, A-Z, and -.
+        // example userId: google|sid:uir7d29343a3gufe414098b063199430
+        static string GetSecretName(string databaseId, string collectionId, string userId)
+        {
+            const char pipe = '|', colon = ':', hyphen = '-';
+
+            var normalizedUserId = userId.Replace(pipe, hyphen).Replace(colon, hyphen);
+
+            return $"{databaseId}-{collectionId}-{normalizedUserId}";
+        }
     }
 }
