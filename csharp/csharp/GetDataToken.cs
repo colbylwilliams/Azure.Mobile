@@ -48,9 +48,17 @@ namespace csharp
 
                 var userId = Thread.CurrentPrincipal.GetClaimsIdentity()?.UniqueIdentifier() ?? AnonymousId;
 
+                log.Info($"\tuserId: {userId}");
+
+
+                var secretId = GetSecretName(databaseId, collectionId, userId);
+
+                log.Info($"\tsecretId: {secretId} ({secretId.Length})");
+
+
                 try
                 {
-                    secretBundle = await KeyVaultClient.GetSecretAsync(EnvironmentVariables.KeyVaultUrl, userId);
+                    secretBundle = await KeyVaultClient.GetSecretAsync(EnvironmentVariables.KeyVaultUrl, secretId);
                 }
                 catch (KeyVaultErrorException kvex)
                 {
@@ -58,15 +66,23 @@ namespace csharp
                     {
                         throw;
                     }
+
+                    log.Info($"\texisting secret not found");
                 }
 
 
                 // if the token is still valid for the next 10 mins return it
-                if (secretBundle != null && secretBundle.Attributes.Expires.HasValue && secretBundle.Attributes.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds < TokenRefreshSeconds)
+                if (secretBundle != null
+                    && secretBundle.Attributes.Expires.HasValue
+                    && secretBundle.Attributes.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds < TokenRefreshSeconds)
                 {
+                    log.Info($"\texisting secret found with greater than 10 minutes remaining before expiration");
+
                     return new OkObjectResult(secretBundle.Value);
                 }
 
+
+                log.Info($"\tgetting new permission token for user");
 
                 // simply getting the user permission will refresh the token
                 var userPermission = await DocumentClient.GetOrCreatePermission((databaseId, collectionId), userId, PermissionMode.All, TokenDurationSeconds, log);
@@ -74,13 +90,15 @@ namespace csharp
 
                 if (!string.IsNullOrEmpty(userPermission?.Token))
                 {
-                    secretBundle = await KeyVaultClient.SetSecretAsync(EnvironmentVariables.KeyVaultUrl, userId, userPermission.Token, secretAttributes: new SecretAttributes(expires: DateTime.UtcNow.AddSeconds(TokenDurationSeconds)));
+                    log.Info($"\tsaving new permission token to key vault");
 
-                    //log.Info($"Updated User Store:\n{userStore}");
+                    secretBundle = await KeyVaultClient.SetSecretAsync(EnvironmentVariables.KeyVaultUrl, secretId, userPermission.Token, secretAttributes: new SecretAttributes(expires: DateTime.UtcNow.AddSeconds(TokenDurationSeconds)));
 
                     return new OkObjectResult(secretBundle.Value);
                 }
 
+
+                log.Info($"\tfailed to get new permission token for user");
 
                 return new StatusCodeResult(500);
             }
@@ -91,5 +109,7 @@ namespace csharp
                 return new StatusCodeResult(500);
             }
         }
+
+        static string GetSecretName(string databaseId, string collectionId, string userId) => $"{databaseId}-{collectionId}-{userId}";
     }
 }
