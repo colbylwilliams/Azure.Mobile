@@ -72,12 +72,10 @@ namespace csharp
                 }
 
 
-                log.Info($" ... ... secretBundle.Attributes.Expires: {secretBundle?.Attributes?.Expires.Value}   ::   {secretBundle?.Attributes?.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds}");
-
                 // if the token is still valid for the next 10 mins return it
                 if (secretBundle != null
                     && secretBundle.Attributes.Expires.HasValue
-                    && secretBundle.Attributes.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds < TokenRefreshSeconds)
+                    && secretBundle.Attributes.Expires.Value.Subtract(DateTime.UtcNow).TotalSeconds > TokenRefreshSeconds)
                 {
                     log.Info($" ... existing secret found with greater than 10 minutes remaining before expiration");
 
