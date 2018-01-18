@@ -24,9 +24,11 @@ namespace csharp
 
             try
             {
+                log?.Info(" ");
+
                 await client.EnsureCollection(collection);
 
-                log?.Info($"Attempting to get Document Collection in Database {collection.DatabaseId} with CollectionId: {collection.CollectionId}");
+                log?.Info($" ... getting collection ({collection.CollectionId}) in database ({collection.DatabaseId})");
 
                 var collectionResponse = await client.ReadDocumentCollectionAsync(UriFactory.CreateDocumentCollectionUri(collection.DatabaseId, collection.CollectionId));
 
@@ -52,39 +54,7 @@ namespace csharp
 
                     try
                     {
-                        //int count = 0;
-
-                        //string continuation = string.Empty;
-
-                        //do
-                        //{
-                        //  // Read the feed 10 items at a time until there are no more items to read
-                        //  var r = await client.ReadPermissionFeedAsync (user.PermissionsLink, new FeedOptions { MaxItemCount = -1, RequestContinuation = continuation });
-
-                        //  // Append the item count
-                        //  count += r.Count;
-
-                        //  // Get the continuation so that we know when to stop.
-                        //  continuation = r.ResponseContinuation;
-
-                        //  foreach (var i in r)
-                        //  {
-                        //      log?.Info ($"permission.Id:             {i.Id}");
-                        //      log?.Info ($"permission.ResourceId:     {i.ResourceId}");
-                        //      log?.Info ($"permission.ResourceLink:   {i.ResourceLink}");
-                        //      log?.Info ($"permission.AltLink:        {i.AltLink}");
-                        //      log?.Info ($"permission.PermissionMode: {i.PermissionMode}");
-                        //      log?.Info ($"permission.SelfLink:       {i.SelfLink}");
-                        //      log?.Info ($"permission.Timestamp:      {i.Timestamp}");
-                        //      log?.Info ($"permission.Token:          {i.Token}");
-                        //      log?.Info ($"permission.ETag:           {i.ETag}");
-                        //      log?.Info ($"");
-                        //  }
-
-                        //} while (!string.IsNullOrEmpty (continuation));
-
-
-                        log?.Info($"Attempting to get Permission with Id: {permissionId}  at Uri: {permissionUri}");
+                        log?.Info($" ... getting permission ({permissionId}) at uri: {permissionUri}");
 
                         var permissionResponse = await client.ReadPermissionAsync(permissionUri, permissionRequestOptions(durationInSeconds));
 
@@ -92,7 +62,7 @@ namespace csharp
 
                         if (permission != null)
                         {
-                            log?.Info($"Found existing Permission with Id: {permission.Id}");
+                            log?.Info($" ... found existing permission ({permission.Id})");
                         }
                     }
                     catch (DocumentClientException dcx)
@@ -103,7 +73,7 @@ namespace csharp
                         {
                             case HttpStatusCode.NotFound:
 
-                                log?.Info($"Did not find Permission with Id: {permissionId}  at Uri: {permissionUri} - creating...");
+                                log?.Info($" ... could not find permission ({permissionId}) at uri: {permissionUri} - creating...");
 
                                 permission = await client.CreateNewPermission(collection.DatabaseId, documentCollection, user, permissionId, permissionMode, durationInSeconds, log);
 
@@ -127,7 +97,7 @@ namespace csharp
 
         static async Task<Permission> CreateNewPermission(this DocumentClient client, string databaseId, DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, int durationInSeconds, TraceWriter log = null)
         {
-            log?.Info($"Creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}");
+            log?.Info($" ... creating new permission ({permissionId}) for collection ({collection?.Id})");
 
             var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
 
@@ -139,7 +109,7 @@ namespace csharp
 
                 if (permission != null)
                 {
-                    log?.Info($"Created new Permission with Id: {permission.Id}");
+                    log?.Info($" ... created new permission ({permission.Id})");
                 }
 
                 return permission;
@@ -154,11 +124,11 @@ namespace csharp
 
                         var oldPermissionId = permissionId.Replace(permissionMode.ToString().ToUpper(), permissionMode == PermissionMode.All ? PermissionMode.Read.ToString().ToUpper() : PermissionMode.All.ToString().ToUpper());
 
-                        log?.Info($"Deleting old Permission with Id: {oldPermissionId}...");
+                        log?.Info($" ... deleting old permission ({oldPermissionId})");
 
                         await client.DeletePermissionAsync(UriFactory.CreatePermissionUri(databaseId, user.Id, oldPermissionId));
 
-                        log?.Info($"Creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}");
+                        log?.Info($" ... creating new permission ({permissionId}) for collection ({collection?.Id})");
 
                         var permissionResponse = await client.CreatePermissionAsync(user.SelfLink, newPermission, permissionRequestOptions(durationInSeconds));
 
@@ -166,7 +136,7 @@ namespace csharp
 
                         if (permission != null)
                         {
-                            log?.Info($"Created new Permission with Id: {permission.Id}");
+                            log?.Info($" ... created new permission ({permission.Id})");
                         }
 
                         return permission;
@@ -188,7 +158,7 @@ namespace csharp
 
             try
             {
-                log?.Info($"Attempting to get Database ({databaseId}) User with Id: {userId}");
+                log?.Info($" ... getting user ({userId}) in database ({databaseId})");
 
                 var response = await client.ReadUserAsync(UriFactory.CreateUserUri(databaseId, userId));
 
@@ -196,7 +166,7 @@ namespace csharp
 
                 if (user != null)
                 {
-                    log?.Info($"Found existing Database ({databaseId}) User with Id {userId}");
+                    log?.Info($" ... found existing user ({userId}) in database ({databaseId})");
                 }
 
                 return (user, false);
@@ -209,7 +179,7 @@ namespace csharp
                 {
                     case HttpStatusCode.NotFound:
 
-                        log?.Info($"Did not find user with Id {userId} - creating...");
+                        log?.Info($" ... did not find user ({userId}) - creating...");
 
                         var response = await client.CreateUserAsync(UriFactory.CreateDatabaseUri(databaseId), new User { Id = userId });
 
@@ -217,7 +187,7 @@ namespace csharp
 
                         if (user != null)
                         {
-                            log?.Info($"Created new Database ({databaseId}) User with Id {userId}");
+                            log?.Info($" ... created new user ({userId}) in database ({databaseId})");
                         }
 
                         return (user, user != null);
@@ -306,7 +276,7 @@ namespace csharp
         {
             if (_databaseCreationTasks.TryGetValue(databaseId, out Task<ResourceResponse<Database>> task) && !task.IsNullFinishCanceledOrFaulted())
             {
-                log?.Info("Database is already being created, returning existing task...");
+                log?.Info($" ... database ({databaseId}) is already being created, returning existing task");
 
                 await task;
             }
@@ -314,7 +284,7 @@ namespace csharp
             {
                 try
                 {
-                    log?.Info("Checking for Database...");
+                    log?.Info($" ... checking for database ({databaseId})");
 
                     _databaseCreationTasks[databaseId] = client.ReadDatabaseAsync(UriFactory.CreateDatabaseUri(databaseId));
 
@@ -324,7 +294,7 @@ namespace csharp
                     {
                         _databaseStatuses[databaseId] = ClientStatus.Initialized;
 
-                        log?.Info($"Found existing Database");
+                        log?.Info($" ... found existing database ({databaseId})");
                     }
                 }
                 catch (DocumentClientException dex)
@@ -341,7 +311,7 @@ namespace csharp
                             {
                                 _databaseStatuses[databaseId] = ClientStatus.Initialized;
 
-                                log?.Info($"Created new Database");
+                                log?.Info($" ... created new database ({databaseId})");
                             }
 
                             break;
@@ -371,7 +341,7 @@ namespace csharp
         {
             if (_collectionCreationTasks.TryGetValue(collection, out Task<ResourceResponse<DocumentCollection>> task) && !task.IsNullFinishCanceledOrFaulted())
             {
-                log?.Info($"Collection: {collection.CollectionId} in Database: {collection.DatabaseId} is already being created, returning existing task...");
+                log?.Info($" ... collection ({collection.CollectionId}) in database ({collection.DatabaseId}) is already being created, returning existing task");
 
                 await task;
             }
@@ -379,7 +349,7 @@ namespace csharp
             {
                 try
                 {
-                    log?.Info($"Checking for Collection: {collection.CollectionId} in Database: {collection.DatabaseId}...");
+                    log?.Info($" ... checking for collection ({collection.CollectionId}) in database ({collection.DatabaseId})");
 
                     _collectionCreationTasks[collection] = client.ReadDocumentCollectionAsync(UriFactory.CreateDocumentCollectionUri(collection.DatabaseId, collection.CollectionId));
 
@@ -389,7 +359,7 @@ namespace csharp
                     {
                         _collectionStatuses[collection] = ClientStatus.Initialized;
 
-                        log?.Info($"Found existing Collection: {collection.CollectionId} in Database: {collection.DatabaseId}");
+                        log?.Info($" ... found existing collection ({collection.CollectionId}) in database ({collection.DatabaseId})");
                     }
                 }
                 catch (DocumentClientException dex)
@@ -406,7 +376,7 @@ namespace csharp
                             {
                                 _collectionStatuses[collection] = ClientStatus.Initialized;
 
-                                log?.Info($"Created new Collection: {collection.CollectionId} in Database: {collection.DatabaseId}");
+                                log?.Info($" ... created new collection ({collection.CollectionId}) in database ({collection.DatabaseId})");
                             }
 
                             break;
