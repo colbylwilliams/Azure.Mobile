@@ -15,13 +15,15 @@ Azure.Mobile has two simple objectives:
 
 It includes one-click deployment templates and native client SDKs for the following:
 
-- Database
-- Blob/File Storage
-- Authentication
-- Push Notifications
-- Serverless Functions
-- Client/Server Analytics
+- [Database (document)][cosmos]
+- [Blob/File/Queue Storage][storage]
+- [Authentication][app-service]
+- [Push Notifications][notification-hub]
+- [Serverless Functions][functions]
+- [Client/Server Analytics][app-insights]
+- [Secure Key Storage][key-vault]
 
+![architecture-diagram](assets/AzureMobile1400_1000.png?raw=true "architecture diagram")
 
 
 # Getting Started
@@ -99,6 +101,12 @@ Licensed under the MIT License (MIT). See [LICENSE](LICENSE) for details.
 [azure-android]:https://aka.ms/azureandroid
 
 [cosmos]:https://azure.microsoft.com/en-us/services/cosmos-db
+[key-vault]:https://azure.microsoft.com/en-us/services/key-vault
+[app-service]:https://azure.microsoft.com/en-us/services/app-service
+[functions]:https://azure.microsoft.com/en-us/services/functions
+[storage]:https://azure.microsoft.com/en-us/services/storage
+[notification-hub]:https://azure.microsoft.com/en-us/services/notification-hubs
+[app-insights]:https://azure.microsoft.com/en-us/services/application-insights
 
 [azure-deploy]:https://aka.ms/mobile-deploy
 [azure-deploy-button]:https://azuredeploy.net/deploybutton.svg
