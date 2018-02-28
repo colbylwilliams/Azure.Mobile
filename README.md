@@ -83,18 +83,6 @@ Most of these services have a generous free tier. [Sign up for a Azure free acco
 
 
 
-# About
-
-- Created by [Colby Williams](https://github.com/colbylwilliams)
-
-## Contributing
-
-This is very much a work in progress, and contributions are absolutely welcome.  Feel free to file issues and pull requests on the repo and we'll address them as time permits.
-
-## License
-
-Licensed under the MIT License (MIT). See [LICENSE](LICENSE) for details.
-
 
 
 [azure-ios]:https://aka.ms/azureios
